@@ -1,6 +1,31 @@
 services:
+
+  frontend:
+    build: ./frontend
+
+    container_name: worldops-frontend
+
+    ports:
+      - "5173:5173"
+
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+
+    container_name: worldops-backend
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: postgres:16
+
     container_name: worldops-postgres
 
     environment:
@@ -13,13 +38,77 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: worldops-postgres-exporter
+
+    ports:
+      - "9187:9187"
+
+    environment:
+      DATA_SOURCE_NAME: "postgresql://admin:admin123@postgres:5432/worldops?sslmode=disable"
+
+    depends_on:
+      - postgres
+
   redis:
     image: redis:7
+
     container_name: worldops-redis
 
     ports:
       - "6379:6379"
 
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: worldops-redis-exporter
+
+    ports:
+      - "9121:9121"
+
+    environment:
+      REDIS_ADDR: redis://redis:6379
+
+    depends_on:
+      - redis
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: worldops-prometheus
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+    depends_on:
+      - backend
+  grafana:
+    image: grafana/grafana
+    container_name: worldops-grafana
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+    
+    depends_on:
+      - prometheus
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: worldops-cadvisor
+
+    ports:
+      - "8081:8080"
+
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
 volumes:
   postgres_data:
+  grafana_data:
