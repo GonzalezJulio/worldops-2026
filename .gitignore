@@ -1,0 +1,28 @@
+# Datos locales
+*.txt
+start-portforwards.sh
+
+# Node
+**/node_modules/
+
+# Python
+**/venv/
+__pycache__/
+*.pyc
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+terraform.tfvars.json
+.terraform.lock.hcl
+crash.log
+
+# Variables de entorno
+.env*
+
+# Logs y backups
+*.log
+*.bak
+*.backup

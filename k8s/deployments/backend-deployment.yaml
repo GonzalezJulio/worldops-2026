@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: backend
+  namespace: worldops
+  labels:
+    app: backend
+
+spec:
+  replicas: 2
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+        - name: backend
+          image: aresden113/worldops-backend:v1
+
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: REDIS_HOST
+              value: redis
+
+            - name: POSTGRES_HOST
+              value: postgres
+
+            - name: POSTGRES_DB
+              value: worldops
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: POSTGRES_PASSWORD
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
