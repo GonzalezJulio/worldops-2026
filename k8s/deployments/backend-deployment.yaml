@@ -8,7 +8,7 @@ metadata:
     app: backend
 
 spec:
-  replicas: 2
+  replicas: 1
 
   strategy:
     type: RollingUpdate
@@ -28,8 +28,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: aresden113/worldops-backend:v1
-
+          image: aresden113/worldops-backend:v2
           imagePullPolicy: Always
 
           ports:
