@@ -10,6 +10,6 @@ spec:
 
   ports:
     - port: 80
-      targetPort: 32400
+      targetPort: 80
 
   type: ClusterIP
