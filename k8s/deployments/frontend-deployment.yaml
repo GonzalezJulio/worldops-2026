@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: aresden113/worldops-frontend:v3
+          image: aresden113/worldops-frontend:v10
           imagePullPolicy: Always
 
           ports:
