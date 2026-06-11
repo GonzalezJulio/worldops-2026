@@ -5,20 +5,15 @@ metadata:
   name: worldops-ingress
   namespace: worldops
 
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: worldops-strip-api@kubernetescrd
+
 spec:
   ingressClassName: traefik
 
   rules:
     - http:
         paths:
-
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8000
 
           - path: /
             pathType: Prefix
@@ -27,3 +22,11 @@ spec:
                 name: frontend
                 port:
                   number: 80
+
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
