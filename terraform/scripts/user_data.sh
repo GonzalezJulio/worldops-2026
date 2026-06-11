@@ -34,6 +34,26 @@ do
   sleep 10
 done
 
+echo "===== ESPERANDO TRAEFIK ====="
+
+until sudo kubectl get deployment traefik -n kube-system >/dev/null 2>&1
+do
+  echo "Esperando deployment Traefik..."
+  sleep 5
+done
+
+sudo kubectl rollout status deployment/traefik -n kube-system --timeout=300s
+
+echo "===== ESPERANDO CRDs DE TRAEFIK ====="
+
+until sudo kubectl get crd middlewares.traefik.io >/dev/null 2>&1
+do
+  echo "Esperando CRD middlewares.traefik.io..."
+  sleep 5
+done
+
+sleep 15
+
 echo "===== CLONANDO REPOSITORIO ====="
 
 mkdir -p /opt
@@ -58,7 +78,23 @@ sudo kubectl apply -f k8s/deployments/
 
 sudo kubectl apply -f k8s/services/
 
-sudo kubectl apply -f k8s/ingress/
+echo "===== APLICANDO MIDDLEWARE ====="
+
+sudo kubectl apply -f k8s/ingress/middleware.yaml
+
+echo "===== VERIFICANDO MIDDLEWARE ====="
+
+until sudo kubectl get middleware strip-api -n worldops >/dev/null 2>&1
+do
+  echo "Esperando Middleware strip-api..."
+  sleep 5
+done
+
+sleep 10
+
+echo "===== APLICANDO INGRESS ====="
+
+sudo kubectl apply -f k8s/ingress/worldops-ingress.yaml
 
 echo "===== NODES ====="
 sudo kubectl get nodes
@@ -68,6 +104,9 @@ sudo kubectl get pods -A
 
 echo "===== SERVICES ====="
 sudo kubectl get svc -A
+
+echo "===== MIDDLEWARES ====="
+sudo kubectl get middleware -A
 
 echo "===== INGRESS ====="
 sudo kubectl get ingress -A
