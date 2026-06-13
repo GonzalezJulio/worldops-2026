@@ -1,11 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: grafana
-  namespace: monitoring 
+  namespace: monitoring
+
 spec:
   replicas: 1
-  
+
   selector:
     matchLabels:
       app: grafana
@@ -14,24 +16,59 @@ spec:
     metadata:
       labels:
         app: grafana
+
     spec:
       containers:
         - name: grafana
           image: grafana/grafana:latest
+
           ports:
             - containerPort: 3000
+
           env:
-            - name: GF_SECURITY_ADMIN_PASSWORD
+            - name: GF_SECURITY_ADMIN_USER
               value: admin
 
-            - name: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
               value: admin123
+
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
 
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
 
+            - name: grafana-datasource
+              mountPath: /etc/grafana/provisioning/datasources
+
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
             claimName: grafana-pvc
+
+        - name: grafana-datasource
+          configMap:
+            name: grafana-datasource

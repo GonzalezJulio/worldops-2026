@@ -11,10 +11,10 @@ echo "===== ACTUALIZANDO SISTEMA ====="
 apt update -y
 apt upgrade -y
 
-apt install -y \
-  curl \
-  git \
-  unzip
+apt install -y 
+curl 
+git 
+unzip
 
 echo "===== INSTALANDO DOCKER ====="
 
@@ -30,16 +30,16 @@ echo "===== ESPERANDO K3S ====="
 
 until sudo kubectl get nodes >/dev/null 2>&1
 do
-  echo "Esperando K3s..."
-  sleep 10
+echo "Esperando K3s..."
+sleep 10
 done
 
 echo "===== ESPERANDO TRAEFIK ====="
 
 until sudo kubectl get deployment traefik -n kube-system >/dev/null 2>&1
 do
-  echo "Esperando deployment Traefik..."
-  sleep 5
+echo "Esperando deployment Traefik..."
+sleep 5
 done
 
 sudo kubectl rollout status deployment/traefik -n kube-system --timeout=300s
@@ -48,8 +48,8 @@ echo "===== ESPERANDO CRDs DE TRAEFIK ====="
 
 until sudo kubectl get crd middlewares.traefik.io >/dev/null 2>&1
 do
-  echo "Esperando CRD middlewares.traefik.io..."
-  sleep 5
+echo "Esperando CRD middlewares.traefik.io..."
+sleep 5
 done
 
 sleep 15
@@ -61,7 +61,7 @@ mkdir -p /opt
 cd /opt
 
 if [ ! -d "/opt/worldops-2026" ]; then
-  git clone https://github.com/GonzalezJulio/worldops-2026.git
+git clone https://github.com/GonzalezJulio/worldops-2026.git
 fi
 
 cd worldops-2026
@@ -78,6 +78,14 @@ sudo kubectl apply -f k8s/deployments/
 
 sudo kubectl apply -f k8s/services/
 
+echo "===== DESPLEGANDO MONITORING ====="
+
+sudo kubectl apply -f k8s/monitoring/namespace.yaml
+
+sleep 5
+
+sudo kubectl apply -f k8s/monitoring/
+
 echo "===== APLICANDO MIDDLEWARE ====="
 
 sudo kubectl apply -f k8s/ingress/middleware.yaml
@@ -86,8 +94,8 @@ echo "===== VERIFICANDO MIDDLEWARE ====="
 
 until sudo kubectl get middleware strip-api -n worldops >/dev/null 2>&1
 do
-  echo "Esperando Middleware strip-api..."
-  sleep 5
+echo "Esperando Middleware strip-api..."
+sleep 5
 done
 
 sleep 10
@@ -104,6 +112,9 @@ sudo kubectl get pods -A
 
 echo "===== SERVICES ====="
 sudo kubectl get svc -A
+
+echo "===== PVC ====="
+sudo kubectl get pvc -A
 
 echo "===== MIDDLEWARES ====="
 sudo kubectl get middleware -A
