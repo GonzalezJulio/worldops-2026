@@ -10,6 +10,10 @@ resource "aws_instance" "worldops_server" {
 
   associate_public_ip_address = true
 
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+  }
 
   user_data = file("${path.module}/scripts/user_data.sh")
 
