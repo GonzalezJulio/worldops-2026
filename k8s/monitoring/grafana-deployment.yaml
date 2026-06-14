@@ -64,11 +64,6 @@ spec:
             - name: grafana-datasource
               mountPath: /etc/grafana/provisioning/datasources
 
-            - name: grafana-dashboards
-              mountPath: /var/lib/grafana/dashboards
-            
-            - name: grafana-dashboard-provider
-              mountPath: /etc/grafana/provisioning/dashboards
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
@@ -78,12 +73,4 @@ spec:
           configMap:
             name: grafana-datasource
 
-        - name: grafana-dashboards-
-          configMap:
-            name: grafana-dashboard-worldops
-
-        - name: grafana-dashboard-provider
-          configMap:
-            name: grafana-dashboard-provider
-
-          
+        
