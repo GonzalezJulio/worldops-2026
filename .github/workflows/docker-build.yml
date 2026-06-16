@@ -23,7 +23,7 @@ jobs:
         run: |
           docker build \
             -t aresden113/worldops-frontend:v11 \
-            ./frontend
+            ./client
 
       - name: Push Frontend
         run: |
@@ -46,7 +46,7 @@ jobs:
         run: |
           docker build \
             -t aresden113/worldops-backend:v11 \
-            ./backend
+            ./server
 
       - name: Push Backend
         run: |
