@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: aresden113/worldops-backend:v10
+          image: aresden113/worldops-backend:v10.0
           imagePullPolicy: Always
 
           ports:

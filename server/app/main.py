@@ -24,11 +24,16 @@ app.add_middleware(
 )
 
 TEAMS = [
-    "Argentina",
-    "Brasil",
-    "Francia",
-    "España",
-    "Alemania"
+    "🇦🇷 Argentina",
+    "🇧🇷 Brasil",
+    "🇫🇷 Francia",
+    "🇪🇸 España",
+    "🇩🇪 Alemania",
+    "🏴 Inglaterra",
+    "🇵🇹 Portugal",
+    "🇳🇱 Países Bajos",
+    "🇳🇴 Noruega",
+    "🇧🇪 Bélgica"
 ]
 
 votes_counter = Counter(
