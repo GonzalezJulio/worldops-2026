@@ -1,0 +1,62 @@
+name: Build and Push Docker Images
+
+on:
+push:
+branches:
+- main
+
+jobs:
+
+frontend:
+
+
+runs-on: ubuntu-latest
+
+steps:
+
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Login Docker Hub
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
+
+  - name: Build Frontend
+    run: |
+      docker build \
+      -t aresden113/worldops-frontend:v11 \
+      ./frontend
+
+  - name: Push Frontend
+    run: |
+      docker push aresden113/worldops-frontend:v11
+
+
+backend:
+
+
+  runs-on: ubuntu-latest
+
+  steps:
+
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Login Docker Hub
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
+
+  - name: Build Backend
+    run: |
+      docker build \
+      -t aresden113/worldops-backend:v11 \
+      ./backend
+
+  - name: Push Backend
+    run: |
+      docker push aresden113/worldops-backend:v11
+
