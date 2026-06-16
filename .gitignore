@@ -1,5 +1,5 @@
 # Datos locales
-*.txt
+datos.txt
 start-portforwards.sh
 
 # Node
