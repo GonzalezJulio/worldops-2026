@@ -12,11 +12,14 @@ spec:
   ingressClassName: traefik
 
   rules:
-    - http:
+    - host: worldops2026.duckdns.org
+
+      http:
         paths:
 
           - path: /
             pathType: Prefix
+
             backend:
               service:
                 name: frontend
@@ -25,6 +28,7 @@ spec:
 
           - path: /api
             pathType: Prefix
+
             backend:
               service:
                 name: backend
