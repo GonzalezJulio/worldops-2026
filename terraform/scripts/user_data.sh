@@ -27,16 +27,16 @@ echo "===== ESPERANDO K3S ====="
 
 until sudo kubectl get nodes >/dev/null 2>&1
 do
-  echo "Esperando K3s..."
-  sleep 10
+echo "Esperando K3s..."
+sleep 10
 done
 
 echo "===== ESPERANDO TRAEFIK ====="
 
 until sudo kubectl get deployment traefik -n kube-system >/dev/null 2>&1
 do
-  echo "Esperando deployment Traefik..."
-  sleep 5
+echo "Esperando deployment Traefik..."
+sleep 5
 done
 
 sudo kubectl rollout status deployment/traefik -n kube-system --timeout=300s
@@ -45,8 +45,8 @@ echo "===== ESPERANDO CRDs DE TRAEFIK ====="
 
 until sudo kubectl get crd middlewares.traefik.io >/dev/null 2>&1
 do
-  echo "Esperando CRD middlewares.traefik.io..."
-  sleep 5
+echo "Esperando CRD middlewares.traefik.io..."
+sleep 5
 done
 
 sleep 15
@@ -58,48 +58,43 @@ mkdir -p /opt
 cd /opt
 
 if [ ! -d "/opt/worldops-2026" ]; then
-  git clone https://github.com/GonzalezJulio/worldops-2026.git
+git clone https://github.com/GonzalezJulio/worldops-2026.git
 fi
 
 cd worldops-2026
 
-echo "===== DESPLEGANDO KUBERNETES ====="
+echo "===== CREANDO NAMESPACE WORLDOPS ====="
 
 sudo kubectl apply -f k8s/namespace.yaml
 
-sleep 5
+echo "===== INSTALANDO ARGOCD ====="
 
-sudo kubectl apply -f k8s/secrets/
+sudo kubectl create namespace argocd 
+--dry-run=client -o yaml | sudo kubectl apply -f -
 
-sudo kubectl apply -f k8s/deployments/
+sudo kubectl apply 
+-n argocd 
+-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-sudo kubectl apply -f k8s/services/
+echo "===== ESPERANDO ARGOCD ====="
 
-echo "===== DESPLEGANDO MONITORING ====="
-
-sudo kubectl apply -f k8s/monitoring/namespace.yaml
-
-sleep 5
-
-sudo kubectl apply -f k8s/monitoring/
-
-echo "===== APLICANDO MIDDLEWARE ====="
-
-sudo kubectl apply -f k8s/ingress/middleware.yaml
-
-echo "===== VERIFICANDO MIDDLEWARE ====="
-
-until sudo kubectl get middleware strip-api -n worldops >/dev/null 2>&1
+until sudo kubectl get deployment argocd-server -n argocd >/dev/null 2>&1
 do
-  echo "Esperando Middleware strip-api..."
-  sleep 5
+echo "Esperando ArgoCD..."
+sleep 10
 done
 
-sleep 10
+sudo kubectl rollout status deployment/argocd-server 
+-n argocd 
+--timeout=600s
 
-echo "===== APLICANDO INGRESS ====="
+echo "===== DESPLEGANDO APPLICATION WORLDOPS ====="
 
-sudo kubectl apply -f k8s/ingress/worldops-ingress.yaml
+sudo kubectl apply -f argocd/worldops-app.yaml
+
+echo "===== ESPERANDO APPLICATION ====="
+
+sleep 30
 
 echo "===== NODES ====="
 sudo kubectl get nodes
@@ -113,8 +108,8 @@ sudo kubectl get svc -A
 echo "===== PVC ====="
 sudo kubectl get pvc -A
 
-echo "===== MIDDLEWARES ====="
-sudo kubectl get middleware -A
+echo "===== APPLICATIONS ====="
+sudo kubectl get applications -n argocd
 
 echo "===== INGRESS ====="
 sudo kubectl get ingress -A
