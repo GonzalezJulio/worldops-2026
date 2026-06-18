@@ -69,11 +69,12 @@ sudo kubectl apply -f k8s/namespace.yaml
 
 echo "===== INSTALANDO ARGOCD ====="
 
-sudo kubectl create namespace argocd 
---dry-run=client -o yaml | sudo kubectl apply -f -
+echo "===== INSTALANDO ARGOCD ====="
 
-sudo kubectl apply 
--n argocd 
+sudo kubectl create namespace argocd --dry-run=client -o yaml | sudo kubectl apply -f -
+
+sudo kubectl apply \
+-n argocd \
 -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 echo "===== ESPERANDO ARGOCD ====="
