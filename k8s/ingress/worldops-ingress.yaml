@@ -6,20 +6,24 @@ metadata:
   namespace: worldops
 
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.middlewares: worldops-strip-api@kubernetescrd
 
 spec:
   ingressClassName: traefik
 
+  tls:
+    - hosts:
+        - worldops2026.duckdns.org
+      secretName: worldops-tls
+
   rules:
     - host: worldops2026.duckdns.org
-
       http:
         paths:
 
           - path: /
             pathType: Prefix
-
             backend:
               service:
                 name: frontend
@@ -28,7 +32,6 @@ spec:
 
           - path: /api
             pathType: Prefix
-
             backend:
               service:
                 name: backend
