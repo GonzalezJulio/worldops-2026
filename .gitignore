@@ -26,3 +26,10 @@ crash.log
 *.log
 *.bak
 *.backup
+
+# Secrets
+github-actions-worldops*
+k8s/secrets/*.yaml
+!k8s/secrets/*.example.yaml
+*.pem
+id_rsa*
